@@ -20,7 +20,7 @@ public class I18nService {
 	public String getMessage(final String messageId) {
 		log.info("Returning the i18n text for messageId {}", messageId);
 		final Locale locale = LocaleContextHolder.getLocale();
-		return getMessage(messageId, locale); 
+		return getMessage(messageId, locale);
 	}
 
 	public String getMessage(final String messageId, final Locale locale) {

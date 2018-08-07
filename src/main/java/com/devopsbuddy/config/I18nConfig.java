@@ -13,6 +13,6 @@ public class I18nConfig {
 		messageSource.setBasename("classpath:i18n/messages");
 		// Checks for new message every 30 minutes
 		messageSource.setCacheSeconds(1800);
-		return messageSource;		 
+		return messageSource;
 	}
 }
