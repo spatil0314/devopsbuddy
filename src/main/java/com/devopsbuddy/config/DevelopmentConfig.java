@@ -1,5 +1,7 @@
 package com.devopsbuddy.config;
 
+import org.h2.server.web.WebServlet;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,5 +18,12 @@ public class DevelopmentConfig {
 	@Bean
 	public EmailService emailService() {
 		return new MockEmailService();
+	}
+
+	@Bean
+	public ServletRegistrationBean<WebServlet> h2ConsoleServletRegistration() {
+		final ServletRegistrationBean<WebServlet> bean = new ServletRegistrationBean<>(new WebServlet());
+		bean.addUrlMappings("/console/*");
+		return bean;
 	}
 }
