@@ -1,6 +1,7 @@
 package com.devopsbuddy.backend.persistence.domain.backend;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,9 +17,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
 
 	private static final long serialVersionUID = 1L;
 
@@ -68,6 +71,29 @@ public class User implements Serializable {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<UserRole> userRoles = new HashSet<>();
 
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		final Set<GrantedAuthority> authorities = new HashSet<>();
+		userRoles.forEach(ur -> authorities.add(new Authority(ur.getRole().getName())));
+		return authorities;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {		
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {		
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {		
+		return true;
+	}
+
+
 	public long getId() {
 		return id;
 	}
@@ -76,6 +102,7 @@ public class User implements Serializable {
 		this.id = id;
 	}
 
+	@Override
 	public String getUsername() {
 		return username;
 	}
@@ -148,6 +175,7 @@ public class User implements Serializable {
 		this.stripeCustomerId = stripeCustomerId;
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -156,6 +184,7 @@ public class User implements Serializable {
 		this.enabled = enabled;
 	}
 
+	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -201,4 +230,6 @@ public class User implements Serializable {
 	public int hashCode() {
 		return (int) (id ^ (id >>> 32));
 	}
+
+
 }

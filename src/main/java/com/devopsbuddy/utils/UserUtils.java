@@ -2,12 +2,12 @@ package com.devopsbuddy.utils;
 
 import com.devopsbuddy.backend.persistence.domain.backend.User;
 
-public class UsersUtils {
+public class UserUtils {
 
 	/**
 	 * Non instantiable.
 	 */
-	private UsersUtils() {
+	private UserUtils() {
 		throw new AssertionError("Non instantiable");
 	}
 
@@ -19,7 +19,7 @@ public class UsersUtils {
 
 		final User user = new User();
 		user.setUsername("basicUser");
-		user.setPassword("secret");
+		user.setPassword("{noop}secret");
 		user.setEmail("me@example.com");
 		user.setFirstName("firstName");
 		user.setLastName("lastName");

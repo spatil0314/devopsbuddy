@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devopsbuddy.backend.persistence.domain.backend.Plan;
+import com.devopsbuddy.backend.persistence.domain.backend.Role;
 import com.devopsbuddy.backend.persistence.domain.backend.User;
 import com.devopsbuddy.backend.persistence.domain.backend.UserRole;
 import com.devopsbuddy.backend.persistence.repositories.PlanRepository;
@@ -39,7 +40,8 @@ public class UserService {
 		user.setPlan(plan);
 
 		for (final UserRole ur : userRoles) {
-			roleRepository.save(ur.getRole());
+			final Role role = roleRepository.save(ur.getRole());
+			ur.setRole(role);
 		}
 
 		user.getUserRoles().addAll(userRoles);

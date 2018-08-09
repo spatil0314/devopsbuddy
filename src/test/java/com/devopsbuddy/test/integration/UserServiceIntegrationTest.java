@@ -16,7 +16,7 @@ import com.devopsbuddy.backend.persistence.domain.backend.UserRole;
 import com.devopsbuddy.backend.service.UserService;
 import com.devopsbuddy.enums.PlansEnum;
 import com.devopsbuddy.enums.RolesEnum;
-import com.devopsbuddy.utils.UsersUtils;
+import com.devopsbuddy.utils.UserUtils;
 
 
 @RunWith(SpringRunner.class)
@@ -30,7 +30,7 @@ public class UserServiceIntegrationTest {
 	public void testCreateNewUser() throws Exception {
 
 		final Set<UserRole> userRoles = new HashSet<>();
-		final User basicUser = UsersUtils.createBasicUser();
+		final User basicUser = UserUtils.createBasicUser();
 		userRoles.add(new UserRole(basicUser, new Role(RolesEnum.BASIC)));
 
 		final User user = userService.createUser(basicUser, PlansEnum.BASIC, userRoles);
