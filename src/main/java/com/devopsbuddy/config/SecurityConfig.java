@@ -1,15 +1,18 @@
 package com.devopsbuddy.config;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.devopsbuddy.backend.service.UserSecurityService;
 
@@ -21,6 +24,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private UserSecurityService userSecurityService;
 	@Autowired
 	private Environment env;
+	private static final String SALT = "sdfoiedsfsd;sdgeretet";
+
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(12, new SecureRandom(SALT.getBytes()));
+	}
 
 	/** Public URLs. */
 	private static final String[] PUBLIC_MATCHERS = {
@@ -56,6 +65,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {		
-		auth.userDetailsService(userSecurityService);
+		auth.userDetailsService(userSecurityService).passwordEncoder(passwordEncoder());
 	}
 }

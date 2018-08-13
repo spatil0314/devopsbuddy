@@ -19,7 +19,7 @@ public class UserUtils {
 
 		final User user = new User();
 		user.setUsername("basicUser");
-		user.setPassword("{noop}secret");
+		user.setPassword("secret");
 		user.setEmail("me@example.com");
 		user.setFirstName("firstName");
 		user.setLastName("lastName");
