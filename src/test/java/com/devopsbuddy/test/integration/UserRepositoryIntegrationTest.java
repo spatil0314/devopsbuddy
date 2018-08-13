@@ -1,8 +1,8 @@
 package com.devopsbuddy.test.integration;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,7 +10,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -18,28 +17,16 @@ import com.devopsbuddy.backend.persistence.domain.backend.Plan;
 import com.devopsbuddy.backend.persistence.domain.backend.Role;
 import com.devopsbuddy.backend.persistence.domain.backend.User;
 import com.devopsbuddy.backend.persistence.domain.backend.UserRole;
-import com.devopsbuddy.backend.persistence.repositories.PlanRepository;
-import com.devopsbuddy.backend.persistence.repositories.RoleRepository;
-import com.devopsbuddy.backend.persistence.repositories.UserRepository;
 import com.devopsbuddy.enums.PlansEnum;
 import com.devopsbuddy.enums.RolesEnum;
-import com.devopsbuddy.utils.UserUtils;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class RepositoriesIntegrationTest {
+public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
 
-	@Autowired
-	private PlanRepository planRepository;
+	@Rule public TestName testName = new TestName();
 
-	@Autowired
-	private RoleRepository roleRepository;
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Rule
-	public final TestName testName  = new TestName();
 
 	@Before
 	public void init() {
@@ -59,7 +46,7 @@ public class RepositoriesIntegrationTest {
 	@Test
 	public void testCreateNewRole() throws Exception {
 
-		final Role userRole = createRole(RolesEnum.BASIC);
+		final Role userRole  = createRole(RolesEnum.BASIC);
 		roleRepository.save(userRole);
 
 		final Optional<Role> retrievedRole = roleRepository.findById(RolesEnum.BASIC.getId());
@@ -69,27 +56,13 @@ public class RepositoriesIntegrationTest {
 	@Test
 	public void createNewUser() throws Exception {
 
-		final Plan basicPlan = createPlan(PlansEnum.BASIC);
-		planRepository.save(basicPlan);
-
 		final String username = testName.getMethodName();
-		final String email = testName.getMethodName() + "@test.de";
-		User basicUser = UserUtils.createBasicUser(username, email);
-		basicUser.setPlan(basicPlan);
+		final String email = testName.getMethodName() + "@devopsbuddy.com";
 
-		final Role basicRole = createRole(RolesEnum.BASIC);
-		final Set<UserRole> userRoles = new HashSet<>();
-		final UserRole userRole = new UserRole(basicUser, basicRole);
-		userRoles.add(userRole);
+		User basicUser = createUser(username, email);
 
-		basicUser.getUserRoles().addAll(userRoles);
-
-		for (final UserRole ur : userRoles) {
-			roleRepository.save(ur.getRole());
-		}
-
-		basicUser = userRepository.save(basicUser);
 		final Optional<User> newlyCreatedUser = userRepository.findById(basicUser.getId());
+		basicUser = userRepository.save(basicUser);
 		Assert.assertTrue(newlyCreatedUser.isPresent());
 		Assert.assertTrue(newlyCreatedUser.get().getId() != 0);
 		Assert.assertNotNull(newlyCreatedUser.get().getPlan());
@@ -104,39 +77,36 @@ public class RepositoriesIntegrationTest {
 
 	@Test
 	public void testDeleteUser() throws Exception {
+
 		final String username = testName.getMethodName();
-		final String email = testName.getMethodName() + "@test.de";
+		final String email = testName.getMethodName() + "@devopsbuddy.com";
 
 		final User basicUser = createUser(username, email);
 		userRepository.deleteById(basicUser.getId());
 	}
-	// -----------------> Private methods
 
-	private Plan createPlan(final PlansEnum plansEnum) {
-		return new Plan(plansEnum);
+	@Test
+	public void testGetUserByEmail() throws Exception {
+		final User user = createUser(testName);
+
+		final User newlyFoundUser = userRepository.findByEmail(user.getEmail());
+		Assert.assertNotNull(newlyFoundUser);
+		Assert.assertNotNull(newlyFoundUser.getId());
 	}
 
-	private Role createRole(final RolesEnum rolesEnum) {
-		return new Role(rolesEnum);
-	}
+	@Test
+	public void testUpdateUserPassword() throws Exception {
+		final User user = createUser(testName);
+		Assert.assertNotNull(user);
+		Assert.assertNotNull(user.getId());
 
-	private User createUser(final String username, final String email) {
-		final Plan basicPlan = createPlan(PlansEnum.BASIC);
-		planRepository.save(basicPlan);
+		final String newPassword = UUID.randomUUID().toString();
 
-		User basicUser = UserUtils.createBasicUser(username, email);
-		basicUser.setPlan(basicPlan);
+		userRepository.updateUserPassword(user.getId(), newPassword);
 
-		final Role basicRole = createRole(RolesEnum.BASIC);
-		roleRepository.save(basicRole);
+		final Optional<User> user2 = userRepository.findById(user.getId());
+		Assert.assertEquals(newPassword, user2.get().getPassword());
 
-		final Set<UserRole> userRoles = new HashSet<>();
-		final UserRole userRole = new UserRole(basicUser, basicRole);
-		userRoles.add(userRole);
-
-		basicUser.getUserRoles().addAll(userRoles);
-		basicUser = userRepository.save(basicUser);
-		return basicUser;
 	}
 
 }
