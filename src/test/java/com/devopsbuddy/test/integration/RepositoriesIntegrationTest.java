@@ -6,7 +6,9 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +37,9 @@ public class RepositoriesIntegrationTest {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Rule
+	public final TestName testName  = new TestName();
 
 	@Before
 	public void init() {
@@ -67,7 +72,9 @@ public class RepositoriesIntegrationTest {
 		final Plan basicPlan = createPlan(PlansEnum.BASIC);
 		planRepository.save(basicPlan);
 
-		User basicUser = UserUtils.createBasicUser();
+		final String username = testName.getMethodName();
+		final String email = testName.getMethodName() + "@test.de";
+		User basicUser = UserUtils.createBasicUser(username, email);
 		basicUser.setPlan(basicPlan);
 
 		final Role basicRole = createRole(RolesEnum.BASIC);
@@ -97,7 +104,10 @@ public class RepositoriesIntegrationTest {
 
 	@Test
 	public void testDeleteUser() throws Exception {
-		final User basicUser = createUser();
+		final String username = testName.getMethodName();
+		final String email = testName.getMethodName() + "@test.de";
+
+		final User basicUser = createUser(username, email);
 		userRepository.deleteById(basicUser.getId());
 	}
 	// -----------------> Private methods
@@ -110,11 +120,11 @@ public class RepositoriesIntegrationTest {
 		return new Role(rolesEnum);
 	}
 
-	private User createUser() {
+	private User createUser(final String username, final String email) {
 		final Plan basicPlan = createPlan(PlansEnum.BASIC);
 		planRepository.save(basicPlan);
 
-		User basicUser = UserUtils.createBasicUser();
+		User basicUser = UserUtils.createBasicUser(username, email);
 		basicUser.setPlan(basicPlan);
 
 		final Role basicRole = createRole(RolesEnum.BASIC);
