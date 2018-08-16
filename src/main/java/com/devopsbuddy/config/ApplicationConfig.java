@@ -15,6 +15,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 @Configuration
 @PropertySource("file:///${user.home}/.devopsbuddy/application-common.properties")
+@PropertySource("file:///${user.home}/.devopsbuddy/stripe.properties")
 @EnableJpaRepositories(basePackages = "com.devopsbuddy.backend.persistence.repositories")
 @EntityScan(basePackages = "com.devopsbuddy.backend.persistence.domain.backend")
 @EnableTransactionManagement
