@@ -40,7 +40,7 @@ public class StripeService {
 			stripeCustomerId = customer.getId();
 		} catch (final StripeException e) {
 			LOG.error("An exception occurred while creating the Stripe customer", e);
-			throw new com.devopsbuddy.exceptions.StripeException();
+			throw new com.devopsbuddy.exceptions.StripeException(e);
 		} 
 		return stripeCustomerId;
 	}
